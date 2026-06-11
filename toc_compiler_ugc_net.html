@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOC & Compiler Design — UGC NET JRF</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1e293b;
+    --border: #2d3a52;
+    --teal: #22d3ee;
+    --teal-dim: #0e7490;
+    --amber: #fbbf24;
+    --green: #4ade80;
+    --red: #f87171;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-xs: #64748b;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #0a0f1e 0%, #0e1f3d 50%, #0a0f1e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(34,211,238,0.07), transparent);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(34,211,238,0.12);
+    border: 1px solid rgba(34,211,238,0.3);
+    color: var(--teal);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .hero h1 span { color: var(--teal); }
+  .hero p { color: var(--text-dim); font-size: 13px; }
+  .exam-pills {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px;
+  }
+  .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .pill .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+  }
+  /* TABS */
+  .tab-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    padding: 0 12px;
+    scrollbar-width: none;
+    position: sticky; top: 0; z-index: 99;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-dim);
+    font-size: 12px; font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+  /* CONTENT */
+  .tab-content { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+  .tab-content.active { display: block; }
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 700; color: #fff;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .card-title .icon {
+    width: 26px; height: 26px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .icon-teal { background: rgba(34,211,238,0.15); color: var(--teal); }
+  .icon-amber { background: rgba(251,191,36,0.15); color: var(--amber); }
+  .icon-green { background: rgba(74,222,128,0.15); color: var(--green); }
+  .icon-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+  .icon-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .icon-pink { background: rgba(244,114,182,0.15); color: var(--pink); }
+  /* CHOMSKY TABLE */
+  .chomsky-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .chomsky-table th {
+    background: var(--surface2);
+    color: var(--teal);
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid var(--teal-dim);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .chomsky-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .chomsky-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .t0 { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .t1 { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+  .t2 { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+  .t3 { background: rgba(34,211,238,0.15); color: var(--teal); border: 1px solid rgba(34,211,238,0.3); }
+  /* EXAM TIP */
+  .exam-tip {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-left: 3px solid var(--amber);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    font-size: 12.5px;
+  }
+  .exam-tip strong { color: var(--amber); }
+  .note {
+    background: rgba(34,211,238,0.07);
+    border: 1px solid rgba(34,211,238,0.2);
+    border-left: 3px solid var(--teal);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12.5px;
+  }
+  .note strong { color: var(--teal); }
+  .warning {
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.25);
+    border-left: 3px solid var(--red);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12.5px;
+  }
+  .warning strong { color: var(--red); }
+  /* CODE / FORMULA */
+  .formula {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--green);
+    margin: 8px 0;
+    overflow-x: auto;
+  }
+  code {
+    font-family: 'Consolas', monospace;
+    background: rgba(255,255,255,0.07);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12.5px;
+    color: var(--teal);
+  }
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  /* MINI CARD */
+  .mini-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .mini-card h4 { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .mini-card p, .mini-card li { font-size: 12px; color: var(--text-dim); }
+  .mini-card ul { padding-left: 14px; }
+  .mini-card li { margin-bottom: 2px; }
+  /* PHASE PIPELINE */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .phase-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    position: relative;
+  }
+  .phase-box::after {
+    content: '▼';
+    display: block;
+    text-align: center;
+    color: var(--teal-dim);
+    font-size: 10px;
+    margin: 3px 0;
+  }
+  .phase-box:last-child::after { display: none; }
+  .phase-name { font-weight: 700; color: var(--teal); font-size: 13px; }
+  .phase-io { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  /* RULES LIST */
+  .rules { list-style: none; padding: 0; }
+  .rules li {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .rules li::before {
+    content: '▹';
+    color: var(--teal);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  /* SECTION HEADER */
+  .section-header {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-xs);
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+  /* COMPARISON TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .compare-table th {
+    background: var(--surface2);
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+  .compare-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+    font-size: 12.5px;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+  /* HIERARCHY VISUAL */
+  .hier-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 10px 0;
+  }
+  .hier-level {
+    width: 100%;
+    border-radius: 6px;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 3px;
+    position: relative;
+  }
+  .h0 { background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5; }
+  .h1 { background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.25); color: #fde68a; width: 88%; }
+  .h2 { background: rgba(74,222,128,0.10); border: 1px solid rgba(74,222,128,0.25); color: #86efac; width: 74%; }
+  .h3 { background: rgba(34,211,238,0.10); border: 1px solid rgba(34,211,238,0.25); color: #67e8f9; width: 60%; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag {
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.25);
+    color: var(--purple);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tag.amber {
+    background: rgba(251,191,36,0.10);
+    border-color: rgba(251,191,36,0.25);
+    color: var(--amber);
+  }
+  .tag.teal {
+    background: rgba(34,211,238,0.10);
+    border-color: rgba(34,211,238,0.25);
+    color: var(--teal);
+  }
+  .tag.green {
+    background: rgba(74,222,128,0.10);
+    border-color: rgba(74,222,128,0.25);
+    color: var(--green);
+  }
+  .tag.red {
+    background: rgba(248,113,113,0.10);
+    border-color: rgba(248,113,113,0.25);
+    color: var(--red);
+  }
+  /* IMPORTANT BADGE */
+  .imp-badge {
+    display: inline-block;
+    background: rgba(248,113,113,0.15);
+    border: 1px solid rgba(248,113,113,0.3);
+    color: var(--red);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: 8px;
+  }
+  .star { color: var(--amber); }
+  h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; margin-top: 14px; }
+  p { margin-bottom: 8px; color: var(--text-dim); font-size: 13px; }
+  ul, ol { padding-left: 18px; color: var(--text-dim); font-size: 13px; }
+  li { margin-bottom: 3px; }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) {
+    .grid-2, .grid-3, .two-col { grid-template-columns: 1fr; }
+  }
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">UGC NET JRF · Computer Science</div>
+  <h1>Theory of Computation &<br><span>Compiler Design</span></h1>
+  <p>Most Important Topics for Exam — Complete Concept Reference</p>
+  <div class="exam-pills">
+    <span class="pill"><span class="dot"></span>Automata Theory</span>
+    <span class="pill"><span class="dot"></span>Formal Languages</span>
+    <span class="pill"><span class="dot"></span>Parsing</span>
+    <span class="pill"><span class="dot"></span>Compiler Phases</span>
+    <span class="pill"><span class="dot"></span>Decidability</span>
+    <span class="pill"><span class="dot"></span>Code Optimization</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('chomsky')">🏛️ Chomsky Hierarchy</button>
+  <button class="tab-btn" onclick="showTab('regular')">⚙️ Regular Languages</button>
+  <button class="tab-btn" onclick="showTab('cfl')">🌳 Context-Free</button>
+  <button class="tab-btn" onclick="showTab('tm')">🖥️ Turing & Decidability</button>
+  <button class="tab-btn" onclick="showTab('compiler')">🔧 Compiler Phases</button>
+  <button class="tab-btn" onclick="showTab('parsing')">📊 FIRST/FOLLOW & LL(1)</button>
+  <button class="tab-btn" onclick="showTab('lr')">⚡ LR Parsing</button>
+  <button class="tab-btn" onclick="showTab('icg')">🗂️ ICG & Optimization</button>
+</div>
+
+<!-- ═══════════════════ TAB 1: CHOMSKY ═══════════════════ -->
+<div id="chomsky" class="tab-content active">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">🏛️</span>Chomsky Hierarchy <span class="imp-badge">⭐ Always in Exam</span></div>
+    <p>The Chomsky Hierarchy classifies formal languages into 4 types based on the automaton that recognizes them and the production rules of their grammar.</p>
+    <div class="hier-visual">
+      <div class="hier-level h0">Type 0 — Recursively Enumerable Language (REL) · Recognized by: Turing Machine · Production: αAβ → γ</div>
+      <div class="hier-level h1">Type 1 — Context-Sensitive Language (CSL) · Recognized by: Linear Bounded Automata (LBA) · Production: αAβ → αγβ</div>
+      <div class="hier-level h2">Context-Free Language (CFL) · Recognized by: PDA (Pushdown Automaton) · Production: A → γ</div>
+      <div class="hier-level h3">Type 3 — Regular Language · Recognized by: DFA / NFA / FA · Production: A → aB or A → a</div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Exam Tip:</strong> Remember the strict subset relation: Regular ⊂ CFL ⊂ CSL ⊂ REL. Also note: every regular language is CFL, but NOT vice versa. L = {aⁿbⁿ | n ≥ 1} is CFL but NOT regular.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">📋</span>Full Chomsky Table</div>
+    <table class="chomsky-table">
+      <tr>
+        <th>Type</th><th>Language Class</th><th>Grammar Production Rule</th><th>Recognizing Machine</th><th>Closure Under</th>
+      </tr>
+      <tr>
+        <td><span class="type-badge t3">Type 3</span></td>
+        <td>Regular</td>
+        <td><code>A → aB</code> or <code>A → a</code></td>
+        <td>DFA / NFA / ε-NFA</td>
+        <td>Union, Concat, Kleene*, Complement, Intersection, Reversal</td>
+      </tr>
+      <tr>
+        <td><span class="type-badge t2">Type 2</span></td>
+        <td>Context-Free</td>
+        <td><code>A → γ</code> (A is single non-terminal)</td>
+        <td>Non-deterministic PDA</td>
+        <td>Union, Concat, Kleene*; NOT complement, NOT intersection</td>
+      </tr>
+      <tr>
+        <td><span class="type-badge t1">Type 1</span></td>
+        <td>Context-Sensitive</td>
+        <td><code>αAβ → αγβ</code>, |γ| ≥ 1</td>
+        <td>Linear Bounded Automaton (LBA)</td>
+        <td>Union, Concat, Kleene*, Complement, Intersection</td>
+      </tr>
+      <tr>
+        <td><span class="type-badge t0">Type 0</span></td>
+        <td>Recursively Enumerable</td>
+        <td>Any production: <code>α → β</code></td>
+        <td>Turing Machine</td>
+        <td>Union, Concat, Kleene*, Intersection; NOT complement</td>
+      </tr>
+    </table>
+    <div class="exam-tip"><strong>⭐ Frequently Asked:</strong> Closure Properties — CFL is NOT closed under complement and intersection. CFL ∩ Regular = CFL (important!). Two CFLs intersection is NOT necessarily CFL.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">📌</span>Key Language Examples — Identify the Type</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4 style="color:var(--teal)">🔵 Regular (Type 3)</h4>
+        <ul>
+          <li>L = {aⁿ | n ≥ 0} = a*</li>
+          <li>L = {w | w has even number of a's}</li>
+          <li>L = {w ∈ {a,b}* | w starts with a}</li>
+          <li>L = {(ab)ⁿ | n ≥ 1}</li>
+          <li>L = strings over {0,1} with at least two 1s</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4 style="color:var(--green)">🟢 CFL but NOT Regular (Type 2)</h4>
+        <ul>
+          <li>L = {aⁿbⁿ | n ≥ 1}</li>
+          <li>L = {aⁿbⁿcⁿ... wait — this is NOT CFL!}</li>
+          <li>L = {wwᴿ | w ∈ {a,b}*} (palindromes)</li>
+          <li>L = {w | w is valid arithmetic expression}</li>
+          <li>L = {aⁿb²ⁿ | n ≥ 1}</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4 style="color:var(--amber)">🟡 CSL but NOT CFL (Type 1)</h4>
+        <ul>
+          <li>L = {aⁿbⁿcⁿ | n ≥ 1} ← Very frequently tested!</li>
+          <li>L = {ww | w ∈ {a,b}*}</li>
+          <li>L = {aⁿbⁿcⁿdⁿ | n ≥ 1}</li>
+          <li>L = {1ⁿ | n is a perfect square}</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4 style="color:var(--red)">🔴 Recursively Enumerable / Not RE</h4>
+        <ul>
+          <li>RE: All recursively decidable languages</li>
+          <li>RE: Halting problem language (accepts but may not halt)</li>
+          <li>NOT RE: Complement of Halting Problem</li>
+          <li>NOT RE: Languages TM cannot recognize at all</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Trick:</strong> L = {aⁿbⁿcⁿ | n ≥ 1} is CSL, NOT CFL. To prove non-CFL, use the Pumping Lemma for CFL.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 2: REGULAR ═══════════════════ -->
+<div id="regular" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">⚙️</span>DFA — Deterministic Finite Automaton</div>
+    <p>A DFA is a 5-tuple: <code>M = (Q, Σ, δ, q₀, F)</code></p>
+    <div class="grid-2" style="margin-top:10px">
+      <div class="mini-card">
+        <h4>Components</h4>
+        <ul>
+          <li><code>Q</code> — finite set of states</li>
+          <li><code>Σ</code> — finite input alphabet</li>
+          <li><code>δ: Q × Σ → Q</code> — transition function</li>
+          <li><code>q₀ ∈ Q</code> — start state</li>
+          <li><code>F ⊆ Q</code> — set of accepting states</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Key Properties</h4>
+        <ul>
+          <li>Exactly ONE transition per state per symbol</li>
+          <li>Total function — defined for all (state, symbol)</li>
+          <li>Processes each input symbol exactly once</li>
+          <li>Deterministic — no choice</li>
+          <li>Minimum DFA is unique for each regular language</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Exam Favorite:</strong> Number of states in minimum DFA for a given language / RE is frequently asked. Also: number of transitions = |Q| × |Σ|.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🔄</span>NFA to DFA Conversion <span class="imp-badge">Very Important</span></div>
+    <p>NFA = <code>(Q, Σ, δ, q₀, F)</code> where <code>δ: Q × Σ → 2^Q</code> (powerset)</p>
+    <div class="note"><strong>Key Fact:</strong> If NFA has <code>n</code> states, the equivalent DFA can have at most <code>2ⁿ</code> states. But usually far fewer are reachable.</div>
+    <h3>ε-NFA to NFA Conversion</h3>
+    <ul class="rules">
+      <li>Compute <strong>ε-closure(q)</strong> = all states reachable from q via ε-transitions only</li>
+      <li>New start state = ε-closure(q₀)</li>
+      <li>δ'(S, a) = ε-closure(⋃{δ(q,a) | q ∈ S})</li>
+      <li>A state S is accepting if S ∩ F ≠ ∅</li>
+    </ul>
+    <div class="exam-tip"><strong>⭐ Exam Tip:</strong> ε-NFA, NFA, DFA — all have EQUAL POWER. They all recognize exactly the Regular Languages. Adding ε-transitions does NOT increase power.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">🔡</span>Regular Expressions <span class="imp-badge">Very Important</span></div>
+    <div class="grid-2">
+      <div>
+        <h3>Basic Operations</h3>
+        <div class="formula">
+r + s   → Union (r OR s)
+r · s   → Concatenation
+r*      → Kleene star (zero or more r)
+r+      → r · r* (one or more)
+r?      → r + ε (zero or one)
+        </div>
+      </div>
+      <div>
+        <h3>Precedence (High → Low)</h3>
+        <div class="formula">
+1. Kleene Star (*)
+2. Concatenation (·)
+3. Union (+)
+
+So: a+bc* = a + (b(c*))
+        </div>
+      </div>
+    </div>
+    <h3>Important Identities</h3>
+    <div class="formula">
+∅* = ε         ε* = ε          (r*)* = r*
+r + ∅ = r      r · ε = r       r · ∅ = ∅
+r + r = r      (r+s)* = (r*s*)* = (r*+s*)*
+(r·s)* ≠ r*·s*  but  (rs)* r = r(sr)*
+    </div>
+    <div class="exam-tip"><strong>⭐ Arden's Theorem:</strong> If X = Q + RX then X = QR* (provided ε ∉ R). Used to convert DFA → Regular Expression using linear equations.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">🔵</span>Pumping Lemma for Regular Languages <span class="imp-badge">Proof Tool</span></div>
+    <p><strong>Theorem:</strong> If L is regular, then ∃ pumping length p ≥ 1 such that every string w ∈ L with |w| ≥ p can be written as w = xyz where:</p>
+    <div class="formula">
+1. |xy| ≤ p          (y is within first p characters)
+2. |y| ≥ 1           (y is non-empty)
+3. ∀ i ≥ 0: xyⁱz ∈ L  (pumping y keeps string in L)
+    </div>
+    <p><strong>How to use it (to prove L is NOT regular):</strong></p>
+    <ol>
+      <li>Assume L is regular with pumping length p</li>
+      <li>Choose a string w ∈ L with |w| ≥ p (cleverly!)</li>
+      <li>Show that for ALL ways to split w = xyz (with conditions), some xyⁱz ∉ L</li>
+      <li>This contradicts the lemma → L is not regular</li>
+    </ol>
+    <div class="exam-tip"><strong>⭐ Classic Example:</strong> L = {aⁿbⁿ | n ≥ 1}. Choose w = aᵖbᵖ. Since |xy| ≤ p, y = aᵏ (k ≥ 1). Pump i=0: xz = aᵖ⁻ᵏbᵖ — unequal counts → NOT in L. So L is not regular. ✓</div>
+    <div class="note"><strong>⚠️ Important:</strong> Pumping Lemma can only DISPROVE regularity. Satisfying it does NOT prove a language IS regular!</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">⚡</span>DFA Minimization (Myhill-Nerode)</div>
+    <p>The minimum DFA has the fewest states. Algorithm:</p>
+    <ol>
+      <li>Remove unreachable states</li>
+      <li>Mark all {accepting, non-accepting} pairs as distinguishable</li>
+      <li>Iteratively mark: (p, q) distinguishable if ∃ a ∈ Σ such that (δ(p,a), δ(q,a)) is already marked</li>
+      <li>Merge all unmarked (equivalent) state pairs</li>
+    </ol>
+    <div class="exam-tip"><strong>⭐ Myhill-Nerode Theorem:</strong> Number of states in min DFA = number of equivalence classes of the right-invariant equivalence relation ~ defined by: x ~ y iff ∀z: xz ∈ L ↔ yz ∈ L. If this has infinitely many classes → L is NOT regular.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════ TAB 3: CFL ═══════════════════ -->
+<div id="cfl" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">🌳</span>Context-Free Grammar (CFG)</div>
+    <p>A CFG is a 4-tuple: <code>G = (V, T, P, S)</code></p>
+    <div class="grid-2" style="margin-top:10px">
+      <div class="mini-card">
+        <h4>Components</h4>
+        <ul>
+          <li><code>V</code> — Variables (non-terminals)</li>
+          <li><code>T</code> — Terminals</li>
+          <li><code>P</code> — Production rules: <code>A → α</code></li>
+          <li><code>S ∈ V</code> — Start symbol</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Types of Derivation</h4>
+        <ul>
+          <li><strong>Leftmost:</strong> always replace leftmost non-terminal</li>
+          <li><strong>Rightmost:</strong> always replace rightmost non-terminal</li>
+          <li><strong>Parse Tree:</strong> unique if grammar is unambiguous</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Ambiguous Grammar:</strong> A grammar is ambiguous if some string has MORE THAN ONE parse tree (or more than one leftmost derivation). Inherently ambiguous CFL: no unambiguous grammar exists for it.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">📝</span>Normal Forms of CFG <span class="imp-badge">Important</span></div>
+    <div class="two-col">
+      <div>
+        <h3>Chomsky Normal Form (CNF)</h3>
+        <p>Every production is either:</p>
+        <div class="formula">A → BC   (two non-terminals)
+A → a    (single terminal)
+S → ε    (only if ε ∈ L)</div>
+        <p style="margin-top:8px">Steps to convert: Eliminate ε-rules → Eliminate unit rules → Eliminate useless symbols → Convert remaining rules</p>
+        <div class="note"><strong>Use:</strong> CYK parsing algorithm requires CNF. Every CFL has a CNF grammar.</div>
+      </div>
+      <div>
+        <h3>Greibach Normal Form (GNF)</h3>
+        <p>Every production is of the form:</p>
+        <div class="formula">A → aα
+where a ∈ T, α ∈ V*</div>
+        <p style="margin-top:8px">Every right-hand side starts with a terminal followed by zero or more non-terminals.</p>
+        <div class="note"><strong>Use:</strong> GNF is useful for constructing PDAs. Each derivation step consumes exactly one terminal.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">📚</span>Pushdown Automaton (PDA)</div>
+    <p>PDA = <code>(Q, Σ, Γ, δ, q₀, Z₀, F)</code></p>
+    <div class="grid-3">
+      <div class="mini-card">
+        <h4>Components</h4>
+        <ul>
+          <li><code>Q</code> — states</li>
+          <li><code>Σ</code> — input alphabet</li>
+          <li><code>Γ</code> — stack alphabet</li>
+          <li><code>δ</code> — transition</li>
+          <li><code>q₀</code> — start state</li>
+          <li><code>Z₀</code> — start stack symbol</li>
+          <li><code>F</code> — final states</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Acceptance Modes</h4>
+        <ul>
+          <li><strong>Final State:</strong> accepted when in final state after reading input</li>
+          <li><strong>Empty Stack:</strong> accepted when stack is empty after reading input</li>
+          <li>Both modes are equivalent in power</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>DPDA vs NPDA</h4>
+        <ul>
+          <li>NPDA is more powerful than DPDA</li>
+          <li>DPDA accepts Deterministic CFLs</li>
+          <li>{aⁿbⁿ} — accepted by DPDA</li>
+          <li>{wwᴿ} — requires NPDA</li>
+          <li>All regular languages are DCFL</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Classic PDA for aⁿbⁿ:</strong> Push a's when reading a, pop one a for each b read. If stack empty when all input read → accept.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🔵</span>Pumping Lemma for CFLs <span class="imp-badge">Important</span></div>
+    <p>If L is CFL with pumping length p, then every w ∈ L with |w| ≥ p can be written as <code>w = uvxyz</code> where:</p>
+    <div class="formula">
+1. |vxy| ≤ p            (middle part bounded)
+2. |vy| ≥ 1             (at least one of v,y is non-empty)
+3. ∀ i ≥ 0: uvⁱxyⁱz ∈ L  (pump both v and y together)
+    </div>
+    <div class="exam-tip"><strong>⭐ Classic Proof:</strong> L = {aⁿbⁿcⁿ | n ≥ 1} is NOT CFL. Choose w = aᵖbᵖcᵖ. Any split uvxyz: pumping v and y can at most affect 2 types of characters (a,b or b,c or a alone, etc.). Can't keep all three counts equal → contradiction.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-pink">📊</span>CFL Closure Properties</div>
+    <table class="compare-table">
+      <tr><th>Operation</th><th>CFL Closed?</th><th>Notes</th></tr>
+      <tr><td>Union (L₁ ∪ L₂)</td><td><span class="tag green">✓ YES</span></td><td>L₁ ∪ L₂ is CFL</td></tr>
+      <tr><td>Concatenation (L₁·L₂)</td><td><span class="tag green">✓ YES</span></td><td>L₁·L₂ is CFL</td></tr>
+      <tr><td>Kleene Star (L*)</td><td><span class="tag green">✓ YES</span></td><td>L* is CFL</td></tr>
+      <tr><td>Intersection (L₁ ∩ L₂)</td><td><span class="tag red">✗ NO</span></td><td>Not necessarily CFL!</td></tr>
+      <tr><td>Complement (L̄)</td><td><span class="tag red">✗ NO</span></td><td>Not necessarily CFL!</td></tr>
+      <tr><td>CFL ∩ Regular</td><td><span class="tag green">✓ YES</span></td><td>Result is always CFL</td></tr>
+      <tr><td>Reversal (Lᴿ)</td><td><span class="tag green">✓ YES</span></td><td>Lᴿ is CFL</td></tr>
+      <tr><td>Homomorphism</td><td><span class="tag green">✓ YES</span></td><td>Closed under homomorphism</td></tr>
+    </table>
+    <div class="exam-tip"><strong>⭐ Classic Trick Question:</strong> L₁ ∩ L₂ where L₁ = {aⁿbⁿcᵐ} and L₂ = {aᵐbⁿcⁿ}. Both are CFL, but intersection = {aⁿbⁿcⁿ} which is NOT CFL!</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 4: TURING & DECIDABILITY ═══════════════════ -->
+<div id="tm" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">🖥️</span>Turing Machine</div>
+    <p>TM = <code>(Q, Σ, Γ, δ, q₀, B, F)</code> where B is the blank symbol</p>
+    <div class="grid-2" style="margin-top:10px">
+      <div class="mini-card">
+        <h4>Components</h4>
+        <ul>
+          <li><code>Q</code> — states</li>
+          <li><code>Σ</code> — input alphabet (Σ ⊂ Γ)</li>
+          <li><code>Γ</code> — tape alphabet</li>
+          <li><code>δ: Q × Γ → Q × Γ × {L, R}</code></li>
+          <li><code>q₀</code> — start state</li>
+          <li><code>B</code> — blank symbol (B ∈ Γ, B ∉ Σ)</li>
+          <li><code>F</code> — set of final/halt states</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Important Variants</h4>
+        <ul>
+          <li><strong>Multi-tape TM:</strong> Same power as single-tape</li>
+          <li><strong>Non-deterministic TM:</strong> Same power as deterministic</li>
+          <li><strong>Universal TM:</strong> Can simulate any TM</li>
+          <li><strong>Linear Bounded Automaton (LBA):</strong> TM restricted to input length tape</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note"><strong>Church-Turing Thesis:</strong> Any algorithm computable by any mechanical means can be computed by a Turing Machine. This is a thesis (hypothesis), not a provable theorem.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">⚖️</span>Decidability <span class="imp-badge">Very Frequently Asked</span></div>
+    <div class="two-col">
+      <div>
+        <h3 style="color:var(--green)">Decidable (Recursive) Languages</h3>
+        <ul class="rules">
+          <li>Membership for Regular Languages</li>
+          <li>Membership for CFL (using CYK)</li>
+          <li>Emptiness of Regular Language</li>
+          <li>Equivalence of two DFAs</li>
+          <li>Equivalence of two Regular Expressions</li>
+          <li>Finiteness of Regular Language</li>
+          <li>Every CFL decidable by TM</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color:var(--red)">Undecidable Problems</h3>
+        <ul class="rules">
+          <li><strong>Halting Problem</strong> — Does TM M halt on input w?</li>
+          <li>Emptiness of RE Language</li>
+          <li>Equivalence of two CFGs</li>
+          <li>Ambiguity of CFG</li>
+          <li>Post Correspondence Problem (PCP)</li>
+          <li>Whether L(TM) = Σ*</li>
+          <li>Whether two TMs accept same language</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Key:</strong> A language is <strong>Recursively Enumerable (RE)</strong> if some TM accepts it (may loop on non-input). It is <strong>Recursive (Decidable)</strong> if some TM always halts and decides membership. Recursive ⊂ RE.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">❌</span>Halting Problem — Undecidability Proof</div>
+    <p>The Halting Problem: Given TM M and input w, does M halt on w?</p>
+    <div class="formula">
+Proof by Contradiction (Diagonalization):
+1. Assume H(M, w) is a decider for halting problem
+2. Construct D(M): if H(M,⟨M⟩) = "halt" → loop forever
+                   if H(M,⟨M⟩) = "loop" → halt
+3. Run D on itself: D(⟨D⟩)
+   - If D halts → D should loop → Contradiction!
+   - If D loops → D should halt → Contradiction!
+Therefore, no such H exists. Halting Problem is UNDECIDABLE.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🎯</span>Rice's Theorem <span class="imp-badge">⭐ Most Important</span></div>
+    <div class="note" style="margin-top:0">
+      <strong>Rice's Theorem:</strong> Any <em>non-trivial</em> property of the language of a Turing Machine is <strong>undecidable</strong>.
+    </div>
+    <div style="margin-top:12px">
+      <p><strong>Property P is trivial if:</strong> either ALL TMs satisfy P, or NO TM satisfies P.</p>
+      <p><strong>Property P is non-trivial if:</strong> some TMs satisfy it and some don't.</p>
+      <div class="formula">
+Examples of UNDECIDABLE by Rice's Theorem:
+• Is L(M) empty?               (non-trivial property)
+• Is L(M) finite?              (non-trivial property)
+• Is L(M) a regular language?  (non-trivial property)
+• Does M accept string "010"?  (non-trivial property)
+• Is L(M) = L(M₂) for given M₂?
+      </div>
+      <div class="exam-tip"><strong>⭐ Exam Trick:</strong> Whenever a question asks "Is there a TM/algorithm that decides whether a TM's language has property X?" — if X is non-trivial (not all or nothing), the answer is NO by Rice's Theorem!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">🔗</span>Reducibility</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4>A ≤ₘ B (A reduces to B)</h4>
+        <ul>
+          <li>If A reduces to B and B is decidable → A is decidable</li>
+          <li>If A reduces to B and A is undecidable → B is undecidable</li>
+          <li>Halting Problem ≤ₘ many other problems</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Important Results</h4>
+        <ul>
+          <li>Regular ⊂ DCFL ⊂ CFL ⊂ Recursive ⊂ RE</li>
+          <li>Complement of RE language may not be RE</li>
+          <li>Complement of Recursive = Recursive</li>
+          <li>If L and L̄ are both RE → L is Recursive</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 5: COMPILER PHASES ═══════════════════ -->
+<div id="compiler" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">🔧</span>Phases of a Compiler <span class="imp-badge">⭐ Always Asked</span></div>
+    <div class="two-col">
+      <div class="pipeline">
+        <div class="phase-box">
+          <div class="phase-name">1. Lexical Analysis (Scanner)</div>
+          <div class="phase-io">Input: Source code → Output: Token stream<br>Tool: Regular Expressions → DFA<br>Detects: Lexical errors</div>
+        </div>
+        <div class="phase-box">
+          <div class="phase-name">2. Syntax Analysis (Parser)</div>
+          <div class="phase-io">Input: Tokens → Output: Parse Tree / AST<br>Tool: CFG → Parsing Algorithms<br>Detects: Syntax errors</div>
+        </div>
+        <div class="phase-box">
+          <div class="phase-name">3. Semantic Analysis</div>
+          <div class="phase-io">Input: Parse Tree → Output: Annotated AST<br>Checks: Type checking, scope rules<br>Detects: Semantic errors</div>
+        </div>
+        <div class="phase-box">
+          <div class="phase-name">4. Intermediate Code Generation</div>
+          <div class="phase-io">Input: Annotated AST → Output: IR (3-address code)<br>Machine-independent representation</div>
+        </div>
+        <div class="phase-box">
+          <div class="phase-name">5. Code Optimization</div>
+          <div class="phase-io">Input: IR → Output: Optimized IR<br>Improves speed/memory (optional phase)</div>
+        </div>
+        <div class="phase-box">
+          <div class="phase-name">6. Code Generation</div>
+          <div class="phase-io">Input: Optimized IR → Output: Target Machine Code<br>Register allocation, instruction selection</div>
+        </div>
+      </div>
+      <div>
+        <div class="mini-card" style="margin-bottom:10px">
+          <h4 style="color:var(--teal)">Symbol Table</h4>
+          <p>Used by ALL phases. Stores identifiers, types, scopes, memory locations.</p>
+        </div>
+        <div class="mini-card" style="margin-bottom:10px">
+          <h4 style="color:var(--amber)">Error Handler</h4>
+          <p>Active across all phases. Each phase detects and reports different kinds of errors.</p>
+        </div>
+        <div class="mini-card">
+          <h4 style="color:var(--green)">Two Passes</h4>
+          <p><strong>Front End:</strong> Phases 1–3 (machine-independent, analysis)<br><strong>Back End:</strong> Phases 4–6 (machine-dependent, synthesis)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">🔤</span>Lexical Analysis — Tokens & Patterns</div>
+    <table class="compare-table">
+      <tr><th>Token Type</th><th>Examples</th><th>Described By</th></tr>
+      <tr><td>Keywords</td><td>if, else, while, for, int, return</td><td>Fixed strings</td></tr>
+      <tr><td>Identifiers</td><td>x, count, myVar, _temp</td><td>[a-zA-Z_][a-zA-Z0-9_]*</td></tr>
+      <tr><td>Integer literals</td><td>0, 42, 100</td><td>[0-9]+</td></tr>
+      <tr><td>Float literals</td><td>3.14, 2.0</td><td>[0-9]+ . [0-9]+</td></tr>
+      <tr><td>Operators</td><td>+, -, *, /, ==, !=</td><td>Fixed symbols</td></tr>
+      <tr><td>Delimiters</td><td>; , ( ) { } [ ]</td><td>Fixed symbols</td></tr>
+    </table>
+    <div class="note"><strong>Lexeme</strong> = actual string matched (e.g., "count"). <strong>Token</strong> = category + value = &lt;id, "count"&gt;. <strong>Pattern</strong> = RE describing the token class.</div>
+    <div class="exam-tip"><strong>⭐ Key:</strong> Lexical analysis uses Regular Expressions → NFA → DFA (via subset construction). The DFA is the actual implementation of the scanner/lexer.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">📦</span>Symbol Table</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4>Contents</h4>
+        <ul>
+          <li>Name / identifier</li>
+          <li>Data type</li>
+          <li>Scope / visibility</li>
+          <li>Memory location / offset</li>
+          <li>Number of parameters (for functions)</li>
+          <li>Return type</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Implementation</h4>
+        <ul>
+          <li><strong>Hash Table</strong> — O(1) average lookup</li>
+          <li><strong>Linked List</strong> — simple but O(n)</li>
+          <li><strong>Scoped tables:</strong> each block has own table, linked to parent</li>
+          <li>Most common: hash table with chaining</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 6: FIRST/FOLLOW & LL(1) ═══════════════════ -->
+<div id="parsing" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">🔢</span>FIRST Sets — Rules & Algorithm <span class="imp-badge">⭐ Most Important</span></div>
+    <p>FIRST(α) = set of terminals that begin strings derivable from α. Also ε if α ⟹* ε.</p>
+    <div class="formula">
+Rules for FIRST(X):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. If X is a terminal:        FIRST(X) = {X}
+2. If X → ε exists:           Add ε to FIRST(X)
+3. If X → Y₁Y₂...Yₖ:
+   • Add FIRST(Y₁) − {ε} to FIRST(X)
+   • If ε ∈ FIRST(Y₁): Add FIRST(Y₂) − {ε}
+   • If ε ∈ FIRST(Y₁) and FIRST(Y₂): Add FIRST(Y₃)...
+   • If ε ∈ FIRST(Yᵢ) for ALL i: Add ε to FIRST(X)
+    </div>
+    <div class="exam-tip"><strong>⭐ In Exam:</strong> Given a grammar, compute FIRST for each non-terminal. This is tested almost in every UGC NET exam. Practice 5-6 examples.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">🔢</span>FOLLOW Sets — Rules & Algorithm <span class="imp-badge">⭐ Most Important</span></div>
+    <p>FOLLOW(A) = set of terminals that can appear immediately to the RIGHT of A in any sentential form. Never contains ε.</p>
+    <div class="formula">
+Rules for FOLLOW(A):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Place $ in FOLLOW(S)  [S = start symbol]
+2. If B → αAβ:  Add FIRST(β) − {ε} to FOLLOW(A)
+3. If B → αA or B → αAβ where ε ∈ FIRST(β):
+   Add FOLLOW(B) to FOLLOW(A)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Note: Apply rules repeatedly until no FOLLOW set changes.
+    </div>
+    <div class="warning"><strong>⚠️ Common Mistake:</strong> FOLLOW never contains ε! If ε ∈ FIRST(β), you add FOLLOW(B), not ε itself.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">📘</span>Worked Example: FIRST & FOLLOW</div>
+    <div class="formula">
+Grammar:
+  E  → T E'
+  E' → + T E' | ε
+  T  → F T'
+  T' → * F T' | ε
+  F  → ( E ) | id
+
+FIRST:
+  FIRST(F)  = { (, id }
+  FIRST(T') = { *, ε }
+  FIRST(T)  = FIRST(F)  = { (, id }
+  FIRST(E') = { +, ε }
+  FIRST(E)  = FIRST(T)  = { (, id }
+
+FOLLOW:
+  FOLLOW(E)  = { ), $ }
+  FOLLOW(E') = FOLLOW(E) = { ), $ }
+  FOLLOW(T)  = FIRST(E') − {ε} ∪ FOLLOW(E') = { +, ), $ }
+  FOLLOW(T') = FOLLOW(T) = { +, ), $ }
+  FOLLOW(F)  = FIRST(T') − {ε} ∪ FOLLOW(T') = { *, +, ), $ }
+    </div>
+    <div class="exam-tip"><strong>⭐ This exact grammar appears in UGC NET very often! Memorize FIRST and FOLLOW sets for this expression grammar.</strong></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">📊</span>LL(1) Parsing Table Construction</div>
+    <p>For each production <code>A → α</code>:</p>
+    <div class="formula">
+1. For each terminal a ∈ FIRST(α) − {ε}:
+   Add (A → α) to M[A, a]
+
+2. If ε ∈ FIRST(α):
+   For each b ∈ FOLLOW(A):
+     Add (A → α) to M[A, b]
+   (If $ ∈ FOLLOW(A), add to M[A, $] too)
+    </div>
+    <div class="grid-2" style="margin-top:12px">
+      <div class="mini-card">
+        <h4>LL(1) Grammar Conditions</h4>
+        <ul>
+          <li>No Left Recursion (direct or indirect)</li>
+          <li>No ambiguity</li>
+          <li>No two entries in same cell of parsing table</li>
+          <li>Left Factored when needed</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Left Recursion Removal</h4>
+        <div style="font-family:monospace;font-size:11px;color:var(--text-dim)">
+          A → Aα | β<br>Becomes:<br>
+          A → β A'<br>A' → α A' | ε
+        </div>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Key:</strong> A grammar is LL(1) if and only if its parsing table has NO conflicts (no cell has more than one entry). If M[A,a] has two productions → grammar is NOT LL(1).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-pink">🔍</span>Parsing Comparison</div>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Top-Down (LL)</th><th>Bottom-Up (LR)</th></tr>
+      <tr><td>Direction</td><td>Left to Right, Leftmost derivation</td><td>Left to Right, Rightmost derivation (reverse)</td></tr>
+      <tr><td>Reads input</td><td>Left to right</td><td>Left to right</td></tr>
+      <tr><td>Derivation</td><td>Leftmost</td><td>Rightmost (in reverse)</td></tr>
+      <tr><td>Stack contains</td><td>Grammar symbols to be derived</td><td>Grammar symbols already seen</td></tr>
+      <tr><td>Handles left recursion</td><td>NO</td><td>YES</td></tr>
+      <tr><td>Power</td><td>Less powerful</td><td>More powerful</td></tr>
+      <tr><td>Methods</td><td>Recursive Descent, LL(1)</td><td>LR(0), SLR(1), CLR(1), LALR(1)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 7: LR PARSING ═══════════════════ -->
+<div id="lr" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">⚡</span>LR Parsing — Overview <span class="imp-badge">⭐ Very Important</span></div>
+    <p>LR parsers are <strong>bottom-up</strong> parsers that use a <strong>stack</strong> + <strong>parsing table</strong>. "L" = left to right scan, "R" = rightmost derivation in reverse.</p>
+    <div class="grid-2" style="margin-top:10px">
+      <div class="mini-card">
+        <h4>LR Parsing Table</h4>
+        <ul>
+          <li><strong>ACTION table:</strong> terminal columns → shift/reduce/accept/error</li>
+          <li><strong>GOTO table:</strong> non-terminal columns → state number</li>
+          <li>States come from LR automaton</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Power Ordering</h4>
+        <div style="font-size:13px;color:var(--teal);font-family:monospace">
+          LR(1) = CLR(1)<br>
+          &nbsp;&nbsp;⊃ LALR(1)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;⊃ SLR(1)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⊃ LR(0)
+        </div>
+        <p style="margin-top:4px">More states = more power to resolve conflicts.</p>
+      </div>
+    </div>
+    <div class="note"><strong>All LL(1) grammars are LR(1) but NOT vice versa.</strong> LR parsing is more powerful than LL parsing.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">📐</span>LR(0) Items & Automaton</div>
+    <div class="formula">
+LR(0) Item: A → α • β
+The dot (•) marks how much of the production has been seen.
+
+Closure operation:
+• For each item A → α • Bβ in the set,
+  add all items B → • γ for each production B → γ
+
+GOTO(I, X):
+• Move the dot past X in all items that have • before X
+• Take closure of result
+    </div>
+    <div class="exam-tip"><strong>⭐ Augmented Grammar:</strong> Add production S' → S to the grammar before building LR automaton. The start item is S' → •S.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">📋</span>LR Parser Comparison Table <span class="imp-badge">⭐ Memorize</span></div>
+    <table class="compare-table">
+      <tr>
+        <th>Property</th>
+        <th>LR(0)</th>
+        <th>SLR(1)</th>
+        <th>CLR(1) / LR(1)</th>
+        <th>LALR(1)</th>
+      </tr>
+      <tr>
+        <td>Items used</td>
+        <td>LR(0) items: <code>A → α•β</code></td>
+        <td>LR(0) items</td>
+        <td>LR(1) items: <code>[A→α•β, a]</code></td>
+        <td>LR(0) cores + LR(1) lookaheads</td>
+      </tr>
+      <tr>
+        <td>Lookahead used for reduce</td>
+        <td>None (reduce always)</td>
+        <td>FOLLOW(A)</td>
+        <td>Specific lookahead in item</td>
+        <td>Merged lookaheads</td>
+      </tr>
+      <tr>
+        <td>Number of states</td>
+        <td>Fewest</td>
+        <td>Same as LR(0)</td>
+        <td>Most (can be exponentially more)</td>
+        <td>Same as SLR(1)</td>
+      </tr>
+      <tr>
+        <td>Power</td>
+        <td>Weakest</td>
+        <td>More than LR(0)</td>
+        <td>Most powerful</td>
+        <td>Between SLR and CLR</td>
+      </tr>
+      <tr>
+        <td>Conflicts possible</td>
+        <td>S/R and R/R</td>
+        <td>Fewer conflicts</td>
+        <td>Fewest conflicts</td>
+        <td>Only R/R conflicts possible</td>
+      </tr>
+      <tr>
+        <td>Used in practice</td>
+        <td>Rarely</td>
+        <td>Sometimes</td>
+        <td>yacc/bison uses this as basis</td>
+        <td>yacc/bison uses LALR(1)</td>
+      </tr>
+    </table>
+    <div class="exam-tip"><strong>⭐ Key Fact:</strong> LALR(1) is obtained from CLR(1) by merging states with same LR(0) core. LALR(1) can introduce R/R conflicts (never S/R conflicts) that CLR(1) doesn't have. LALR(1) has same number of states as SLR(1) but is more powerful.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🚨</span>Parsing Conflicts</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4 style="color:var(--amber)">Shift-Reduce Conflict</h4>
+        <p>When parser can either shift next input OR reduce current stack — both valid actions for same state and input symbol.</p>
+        <p style="color:var(--red);margin-top:6px">Dangling else problem is a classic S/R conflict example.</p>
+      </div>
+      <div class="mini-card">
+        <h4 style="color:var(--red)">Reduce-Reduce Conflict</h4>
+        <p>When parser can reduce using two different productions for same state and input symbol. Indicates grammar ambiguity or inadequate lookahead.</p>
+        <p style="color:var(--amber);margin-top:6px">LALR(1) can have R/R conflicts that CLR(1) doesn't have.</p>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Exam Tip:</strong> If a grammar is ambiguous → it can NEVER be parsed without conflict by ANY LR parser. Unambiguous grammar may still have conflicts in LR(0) or SLR(1) but might be fine with CLR(1).</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TAB 8: ICG & OPTIMIZATION ═══════════════════ -->
+<div id="icg" class="tab-content">
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-teal">🗂️</span>Intermediate Code Representations <span class="imp-badge">Important</span></div>
+    <div class="grid-3">
+      <div class="mini-card">
+        <h4>Three-Address Code (TAC)</h4>
+        <ul>
+          <li><code>x = y op z</code></li>
+          <li><code>x = op y</code></li>
+          <li><code>x = y</code></li>
+          <li><code>goto L</code></li>
+          <li><code>if x goto L</code></li>
+          <li><code>param x, call p, n</code></li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Quadruples</h4>
+        <div style="font-family:monospace;font-size:11px;color:var(--text-dim)">
+          (op, arg1, arg2, result)<br><br>
+          e.g. a = b + c * d:<br>
+          (*, c, d, t1)<br>
+          (+, b, t1, t2)<br>
+          (=, t2, _, a)
+        </div>
+      </div>
+      <div class="mini-card">
+        <h4>Triples</h4>
+        <div style="font-family:monospace;font-size:11px;color:var(--text-dim)">
+          (op, arg1, arg2)<br>
+          Result referenced by index<br><br>
+          e.g. a = b + c * d:<br>
+          (0) (*, c, d)<br>
+          (1) (+, b, (0))<br>
+          (2) (=, a, (1))
+        </div>
+        <p style="font-size:11px;margin-top:4px">Indirect triples: use pointer array to allow reordering</p>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Key Difference:</strong> Quadruples have explicit result field (easier to optimize). Triples reference by position (compact but harder to reorder). Indirect Triples solve the reordering problem.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-amber">🎛️</span>Syntax Directed Translation (SDT)</div>
+    <div class="two-col">
+      <div>
+        <h3>Attribute Grammar</h3>
+        <ul class="rules">
+          <li><strong>Synthesized attributes:</strong> computed from children's values (bottom-up, S-attributed)</li>
+          <li><strong>Inherited attributes:</strong> passed down from parent/siblings (top-down)</li>
+          <li><strong>S-attributed:</strong> only synthesized → can be evaluated during LR parsing</li>
+          <li><strong>L-attributed:</strong> synthesized + inherited from LEFT siblings → can be evaluated during LL parsing</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Evaluation Order</h3>
+        <div class="formula" style="font-size:12px">
+S-attributed  ⊂  L-attributed
+Both evaluated in one pass if
+dependencies form a DAG (not cycle).
+
+S-attributed → evaluated bottom-up
+L-attributed → evaluated left-to-right
+depth-first traversal
+        </div>
+        <div class="exam-tip"><strong>⭐ Key:</strong> Every S-attributed grammar is also L-attributed. L-attributed is used with top-down parsers.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-green">⚡</span>Code Optimization Techniques <span class="imp-badge">Important</span></div>
+    <div class="section-header">Machine-Independent Optimizations</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4>Local Optimizations</h4>
+        <ul>
+          <li><strong>Common Subexpression Elimination (CSE):</strong> Avoid recomputing same expression</li>
+          <li><strong>Constant Folding:</strong> Evaluate constant expressions at compile time (3+4 → 7)</li>
+          <li><strong>Constant Propagation:</strong> Replace variable with its constant value</li>
+          <li><strong>Dead Code Elimination:</strong> Remove unreachable or unused code</li>
+          <li><strong>Copy Propagation:</strong> Replace x = y; use x → use y directly</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Loop Optimizations</h4>
+        <ul>
+          <li><strong>Loop Invariant Code Motion:</strong> Move code that doesn't change in loop to outside</li>
+          <li><strong>Induction Variable Elimination:</strong> Simplify variables that change by constant amount each iteration</li>
+          <li><strong>Loop Unrolling:</strong> Reduce loop overhead by duplicating body</li>
+          <li><strong>Strength Reduction:</strong> Replace costly op with cheaper (x*2 → x+x)</li>
+          <li><strong>Loop Fusion:</strong> Combine two adjacent loops into one</li>
+        </ul>
+      </div>
+    </div>
+    <div class="section-header" style="margin-top:14px">Machine-Dependent Optimizations</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4>Peephole Optimization</h4>
+        <ul>
+          <li>Examines small window ("peephole") of instructions</li>
+          <li>Remove redundant loads/stores</li>
+          <li>Simplify algebraic expressions (x + 0 → x)</li>
+          <li>Replace jump chains</li>
+          <li>Use machine idioms (INC instead of ADD 1)</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Register Allocation</h4>
+        <ul>
+          <li>Assign variables to CPU registers (limited resource)</li>
+          <li>Graph coloring approach: variables conflict if simultaneously live</li>
+          <li>Spilling: store to memory when registers full</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ DAG (Directed Acyclic Graph)</strong> is used to represent Basic Blocks for optimization. It automatically identifies common subexpressions and eliminates redundant computations.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-purple">🗃️</span>Runtime Storage Organization</div>
+    <div class="grid-2">
+      <div class="mini-card">
+        <h4>Activation Record / Stack Frame</h4>
+        <ul>
+          <li>Return value</li>
+          <li>Actual parameters</li>
+          <li>Control link (dynamic link — points to caller's AR)</li>
+          <li>Access link (static link — for lexical scoping)</li>
+          <li>Saved machine state</li>
+          <li>Local variables</li>
+          <li>Temporaries</li>
+        </ul>
+      </div>
+      <div class="mini-card">
+        <h4>Storage Allocation Types</h4>
+        <ul>
+          <li><strong>Static:</strong> allocated at compile time, fixed addresses. Global variables, static local vars.</li>
+          <li><strong>Stack:</strong> allocated/freed on function call/return. Local variables, parameters.</li>
+          <li><strong>Heap:</strong> dynamic allocation at runtime (malloc/new). Managed by programmer or GC.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon icon-red">🎯</span>Quick Revision — Most Asked in UGC NET</div>
+    <div class="grid-2">
+      <div>
+        <div class="section-header">Theory of Computation</div>
+        <ul class="rules">
+          <li>Chomsky hierarchy — language ↔ machine mapping</li>
+          <li>Closure properties of Regular, CFL, CSL, RE languages</li>
+          <li>Pumping Lemma (Regular + CFL) — proof technique</li>
+          <li>Min DFA states for given RE or language</li>
+          <li>NFA → DFA subset construction</li>
+          <li>CFL ∩ Regular = CFL (very frequently tested)</li>
+          <li>aⁿbⁿcⁿ is NOT CFL, {aⁿbⁿ} IS CFL</li>
+          <li>Rice's Theorem — undecidable non-trivial properties</li>
+          <li>Halting Problem undecidability</li>
+          <li>Recursive vs RE languages</li>
+        </ul>
+      </div>
+      <div>
+        <div class="section-header">Compiler Design</div>
+        <ul class="rules">
+          <li>Phases of compiler — input/output of each phase</li>
+          <li>FIRST and FOLLOW computation</li>
+          <li>LL(1) parsing table construction & conflicts</li>
+          <li>LR(0), SLR(1), LALR(1), CLR(1) — differences</li>
+          <li>LALR(1) = merge states of CLR(1)</li>
+          <li>Shift-Reduce and Reduce-Reduce conflicts</li>
+          <li>S-attributed vs L-attributed SDT</li>
+          <li>Three-Address Code / Quadruples / Triples</li>
+          <li>Peephole optimization techniques</li>
+          <li>Loop invariant code motion</li>
+        </ul>
+      </div>
+    </div>
+    <div class="exam-tip"><strong>⭐ Strategy:</strong> Focus 60% on Compiler Design (especially parsing — FIRST, FOLLOW, LL(1), LR) and 40% on TOC (Chomsky hierarchy, automata, pumping lemma, decidability). These topics together carry ~15–20% of UGC NET CS paper.</div>
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
